@@ -1,0 +1,14 @@
+{
+    "resolves": [
+        {
+            "organization": "ystyle",
+            "name": "cjCache",
+            "path": "./",
+            "version": "1.0.0",
+            "hash": "WyJ5c3R5bGUiLCJjakNhY2hlIiwiL2hvbWUveXN0eWxlL0NvZGUvQ2FuZ0ppZS9jai1jYWNoZSIsIjEuMC4wIl27G5IWLv7/glfz83iE+9TyrlitDw==",
+            "requires": [],
+            "packageRequires": {},
+            "foreign_requires": {}
+        }
+    ]
+}
