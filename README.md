@@ -1,5 +1,5 @@
 ### cj-cache
-> go-cache的仓颉实现， 基于内存的key value缓存， 适合单机程序
+> 基于内存的key value缓存， 适合单机程序。 go-cache的仓颉实现。
 
 ### 使用
 - 下载代码并创建cpm项目， cj-cache和需要使用的项目目录平级(否则自行修改依赖的path字段)

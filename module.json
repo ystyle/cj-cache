@@ -7,6 +7,6 @@
     "requires": {},
     "PackageRequires": {},
     "foreign_requires": {},
-    "library_type": "",
+    "library_type": "executable",
     "command_option": ""
 }
