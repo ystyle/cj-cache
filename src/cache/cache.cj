@@ -6,7 +6,7 @@ from std import sync.Mutex
 let NoExpiration = Duration.second(-1)
 let DefaultExpiration = Duration.second(0)
 
-external record Item<T>{
+public record Item<T>{
     var Data:T
     var Expiration:Int64 = 0
     init(data:T) {
@@ -26,20 +26,21 @@ external record Item<T>{
     }
 }
 
-external class Cache<T> {
-    private var defaultExpiration:Duration
-    private var items:HashMap<String, Item<T>>
-    private var mu:Mutex
-    private var onEvicted:Option<(String, T) -> Unit>
-
-    // private var janitor:Janitor
+public class Cache<T> {
+    protected var defaultExpiration:Duration
+    protected var items:HashMap<String, Item<T>>
+    protected var mu:Mutex
+    protected var onEvicted:Option<(String, T) -> Unit>
+    private var janitor:?Janitor<T> = None
+    
     init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
         this.defaultExpiration = defaultExpiration
         this.items = items
         this.mu = Mutex()
         this.onEvicted = None
         if (cleanupInterval.nanoseconds() > 0) {
-            runJanitor(this, cleanupInterval)
+            this.janitor = Janitor<T>(cleanupInterval)
+            this.janitor?.run(this)
         }
     }
     init(defaultExpiration:Duration, cleanupInterval:Duration) {
@@ -48,7 +49,8 @@ external class Cache<T> {
         this.mu = Mutex()
         this.onEvicted = None
         if (cleanupInterval.nanoseconds() > 0) {
-            runJanitor(this, cleanupInterval)
+            this.janitor = Janitor<T>(cleanupInterval)
+            this.janitor?.run(this)
         }
     }
 
@@ -57,9 +59,9 @@ external class Cache<T> {
         if (d == DefaultExpiration) {
             e = this.defaultExpiration.microseconds()
         }
-        this.mu.lock()
-        this.items.put(k, Item(v, e))
-        this.mu.unlock()
+        synchronized(this.mu) {
+            this.items.put(k, Item(v, e))
+        }
     }
 
     private func set(k:String,v:T, d!:Duration = DefaultExpiration) {
@@ -75,99 +77,88 @@ external class Cache<T> {
     }
 
     private func get(k:String):Option<T> {
-        let item = this.items.get(k)
-        match (item) {
-            case $None => None
-            case Some(v) => 
-             if (v.Expiration > 0) {
+        if (this.items.contains(k)) {
+            let v = this.items[k]
+            if (v.Expiration > 0) {
                 if (Time.now().unixNano() > v.Expiration) {
                     return None
                 }
              }
-             v.Data
+             return v.Data
+        } else {
+            return None
         }
     }
 
-    func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Bool> {
-        this.mu.lock()
-        let item = this.get(k)
-        match (item) {
-            case Some(_) =>
-                this.mu.unlock()
-                Err(Exception("Item ${k} already exists"))
-            case $None => 
+    func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
+        synchronized(this.mu) {
+            if (this.items.contains(k)) {
+                return Err(Exception("Item ${k} already exists"))
+            } else  {
                 this.set(k, v, d:d)
-                this.mu.unlock()
-                Ok(true)
+                return Ok(())
+            }
         }
     }
 
-    func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Bool> {
-        this.mu.lock()
-        let item = this.get(k)
-        match (item) {
-            case $None =>
-                this.mu.unlock()
-                Err(Exception("Item ${k} doesn't exist"))
-            case Some(_) => 
+    func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
+        synchronized(this.mu) {
+            if (this.items.contains(k)) {
                 this.set(k, v, d:d)
-                this.mu.unlock()
-                Ok(true)
+                return Ok(())
+            } else {
+                return Err(Exception("Item ${k} doesn't exist"))
+            }
         }
     }
 
     func Get(k:String):Option<T> {
         this.mu.lock()
-        let item = this.items.get(k)
-        match (item) {
-            case $None =>
-                this.mu.unlock()
-                return None
-            case Some(v) => 
-                if (v.Expiration >0) {
-                    if (Time.now().unixNano() > v.Expiration) {
-                        return None
-                    }
+        if (this.items.contains(k)) {
+            let v = this.items[k]
+            if (v.Expiration >0) {
+                if (Time.now().unixNano() > v.Expiration) {
+                    return None
                 }
-                this.mu.unlock()
-                return v.Data
+            }
+            this.mu.unlock()
+            return v.Data
+        } else {
+            this.mu.unlock()
+            return None
         }
     }
 
     func GetWithExpiration(k:String):Option<T*Int64> {
         this.mu.lock()
-        let item = this.items.get(k)
-        match (item) {
-            case $None => 
-                this.mu.unlock()
-                return None
-            case Some(v) => 
-                if (v.Expiration > 0) {
-                    if (Time.now().unixNano() > v.Expiration) {
-                        this.mu.unlock()
-                        return None
-                    }
+        if (this.items.contains(k)) {
+            let v = this.items[k]
+            if (v.Expiration > 0) {
+                if (Time.now().unixNano() > v.Expiration) {
                     this.mu.unlock()
-                    return (v.Data, v.Expiration)
+                    return None
                 }
-                return (v.Data, 0)
+                this.mu.unlock()
+                return (v.Data, v.Expiration)
+            }
+            return (v.Data, 0)
+        } else {
+            this.mu.unlock()
+            return None
         }
     }
 
-    private func delete(k:String): Option<T> * Bool {
+    private func delete(k:String): Option<T> {
         this.mu.lock()
-        match (this.onEvicted) {
-            case $None => 
-                this.items.remove(k)
-                return  (None, false)
-            case Some(fn) => 
-                let item = this.items.get(k)
-                match (item) {
-                    case $None => return (None, false)
-                    case Some(v) => 
-                    this.items.remove(k)
-                    return (v.Data, true)
-                }
+        if (this.items.contains(k)) {
+            let v = this.items[k]
+            this.items.remove(k)
+            this.onEvicted?(k, v.Data)
+            this.mu.unlock()
+            return v.Data
+        } else {
+            this.mu.unlock()
+            return None
         }
     }
 
@@ -175,10 +166,7 @@ external class Cache<T> {
         this.mu.lock()
         let r = this.delete(k)
         this.mu.unlock()
-        if (!r[1]) {
-            return
-        }
-        match (r[0]) {
+        match (r) {
             case $None => ()
             case Some(v) => this.onEvicted?(k, v)
         }
@@ -191,13 +179,11 @@ external class Cache<T> {
         for ((k, item) in this.items) {
             if (item.Expiration > 0 && now > item.Expiration) {
                 let r = this.delete(k)
-                if (r[1]) {
-                    match (r[0]) {
-                        case $None => ()
-                        case Some(ov) => 
-                            evictedItems.add(KeyValue(k, ov))
-                    }                    
-                }
+                match (r) {
+                    case $None => ()
+                    case Some(ov) => 
+                        evictedItems.add(KeyValue(k, ov))
+                }           
             }
         }
         this.mu.unlock()
@@ -257,12 +243,8 @@ class Janitor<T> {
     }
     func run(c:Cache<T>) {
         var ticker = Ticker(this.Interval, { 
-            c.DeleteExpired()
+            let count = c.ItemCount()
+            println("count: ${count}")
         })
     }
-}
-
-func runJanitor<T>(c:Cache<T>, ci:Duration) {
-    let janitor = Janitor<T>(ci)
-    janitor.run(c)
 }
