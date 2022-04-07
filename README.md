@@ -29,7 +29,7 @@ from cj_cache import cache.*
 ```
 func main() {
     let c = Cache<Int64>(Duration.minute(5) , Duration.minute(10))
-    cache.Set("1", 1)
+    c.Set("1", 1)
     let i = c.Get("1")??0
     println("i: ${i}")
 }
