@@ -1,12 +1,12 @@
 {
-    "cjc_version": "0.14",
+    "cjc_version": "0.27.1",
     "organization": "ystyle",
-    "name": "cjCache",
+    "name": "cj_cache",
     "description": "nothing here",
     "version": "1.0.0",
     "requires": {},
     "PackageRequires": {},
     "foreign_requires": {},
-    "library_type": "executable",
+    "output_type": "static",
     "command_option": ""
 }

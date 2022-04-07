@@ -13,7 +13,7 @@ $ cpm new test demo
 - 在`cjcache-demo/module.json`添加`requires`
 ```json
 "requires": {
-	"cjCache": {
+	"cj_cache": {
 		"organization": "ystyle",
 		"version":"1.0.0",
 		"path": "../cj-cache"
@@ -22,7 +22,7 @@ $ cpm new test demo
 ```
 - 导入包
 ```cj
-from cjCache import cache.*
+from cj_cache import cache.*
 ```
 
 ### 示例

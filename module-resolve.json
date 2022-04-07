@@ -1,14 +1,16 @@
 {
-    "resolves": [
-        {
-            "organization": "ystyle",
-            "name": "cjCache",
-            "path": "./",
-            "version": "1.0.0",
-            "hash": "WyJ5c3R5bGUiLCJjakNhY2hlIiwiL2hvbWUveXN0eWxlL0NvZGUvQ2FuZ0ppZS9jai1jYWNoZSIsIjEuMC4wIl27G5IWLv7/glfz83iE+9TyrlitDw==",
-            "requires": [],
-            "packageRequires": {},
-            "foreign_requires": {}
-        }
-    ]
+  "resolves": [
+    {
+      "organization": "ystyle",
+      "name": "cj_cache",
+      "path": "./",
+      "version": "1.0.0",
+      "hash": "-2010775589214590175",
+      "output_type": "static",
+      "command_option": "",
+      "requires": [],
+      "package_requires": {},
+      "foreign_requires": {}
+    }
+  ]
 }
