@@ -27,6 +27,9 @@ from cj_cache import cache.*
 
 ### 示例
 ```
+from cj_cache import cache.*
+from std import time.*
+
 func main() {
     let c = Cache<Int64>(Duration.minute(5) , Duration.minute(10))
     c.Set("1", 1)
