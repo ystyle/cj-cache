@@ -1,5 +1,5 @@
 {
-    "cjc_version": "0.14",
+    "cjc_version": "0.26.2",
     "organization": "ystyle",
     "name": "cjCache",
     "description": "nothing here",
@@ -7,6 +7,6 @@
     "requires": {},
     "PackageRequires": {},
     "foreign_requires": {},
-    "library_type": "executable",
+    "output_type": "executable",
     "command_option": ""
 }

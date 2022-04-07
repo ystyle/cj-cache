@@ -9,16 +9,16 @@ let DefaultExpiration = Duration.second(0)
 public record Item<T>{
     var Data:T
     var Expiration:Int64 = 0
-    init(data:T) {
+    public init(data:T) {
         this.Data = data
     }
 
-    init(data:T, expiration:Int64) {
+    public init(data:T, expiration:Int64) {
         this.Data = data
         this.Expiration = expiration
     }
 
-    func Expired(): Bool {
+    public func Expired(): Bool {
         if (this.Expiration == 0) {
             return false
         }
@@ -33,7 +33,7 @@ public class Cache<T> {
     protected var onEvicted:Option<(String, T) -> Unit>
     private var janitor:?Janitor<T> = None
     
-    init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
+    public init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
         this.defaultExpiration = defaultExpiration
         this.items = items
         this.mu = Mutex()
@@ -43,7 +43,7 @@ public class Cache<T> {
             this.janitor?.run(this)
         }
     }
-    init(defaultExpiration:Duration, cleanupInterval:Duration) {
+    public init(defaultExpiration:Duration, cleanupInterval:Duration) {
         this.defaultExpiration = defaultExpiration
         this.items = HashMap()
         this.mu = Mutex()
@@ -54,7 +54,13 @@ public class Cache<T> {
         }
     }
 
-    func Set(k:String,v:T, d!:Duration = NoExpiration) {
+    /**
+     * 设置值, 不检查是否已存在
+     * @param k:String key
+     * @param v:String value
+     * @param d!:Duration 不填写时不过期
+     */
+    public func Set(k:String,v:T, d!:Duration = NoExpiration) {
         var e:Int64 = d.microseconds()
         if (d == DefaultExpiration) {
             e = this.defaultExpiration.microseconds()
@@ -72,7 +78,7 @@ public class Cache<T> {
         this.items.put(k, Item(v, e))
     }
 
-    func SetDefault(k:String,v:T) {
+    public func SetDefault(k:String,v:T) {
         this.Set(k, v)
     }
 
@@ -90,7 +96,7 @@ public class Cache<T> {
         }
     }
 
-    func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
+    public func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 return Err(Exception("Item ${k} already exists"))
@@ -101,7 +107,7 @@ public class Cache<T> {
         }
     }
 
-    func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
+    public func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 this.set(k, v, d:d)
@@ -112,7 +118,7 @@ public class Cache<T> {
         }
     }
 
-    func Get(k:String):Option<T> {
+    public func Get(k:String):Option<T> {
         this.mu.lock()
         if (this.items.contains(k)) {
             let v = this.items[k]
@@ -129,7 +135,7 @@ public class Cache<T> {
         }
     }
 
-    func GetWithExpiration(k:String):Option<T*Int64> {
+    public func GetWithExpiration(k:String):Option<T*Int64> {
         this.mu.lock()
         if (this.items.contains(k)) {
             let v = this.items[k]
@@ -162,17 +168,17 @@ public class Cache<T> {
         }
     }
 
-    func Delete(k:String) {
+    public func Delete(k:String) {
         this.mu.lock()
         let r = this.delete(k)
         this.mu.unlock()
         match (r) {
-            case $None => ()
+            case None => ()
             case Some(v) => this.onEvicted?(k, v)
         }
     }
 
-    func DeleteExpired() {
+    public func DeleteExpired() {
         var evictedItems = Buffer<KeyValue<T>>()
         let now = Time.now().unixNano()
         this.mu.lock()
@@ -180,7 +186,7 @@ public class Cache<T> {
             if (item.Expiration > 0 && now > item.Expiration) {
                 let r = this.delete(k)
                 match (r) {
-                    case $None => ()
+                    case None => ()
                     case Some(ov) => 
                         evictedItems.add(KeyValue(k, ov))
                 }           
@@ -192,13 +198,13 @@ public class Cache<T> {
         }
     }
 
-    func OnEvicted(fn: (String, T) -> Unit) {
+    public func OnEvicted(fn: (String, T) -> Unit) {
         this.mu.lock()
         this.onEvicted = fn
         this.mu.unlock()
     }
 
-    func Items():HashMap<String, Item<T>> {
+    public func Items():HashMap<String, Item<T>> {
         this.mu.lock()
         let m = HashMap<String, Item<T>>(this.items.size())
         let now = Time.now().unixNano()
@@ -213,7 +219,7 @@ public class Cache<T> {
         return m
     }
 
-    func ItemCount():Int64 {
+    public func ItemCount():Int64 {
         this.mu.lock()
         let n = this.items.size()
         this.mu.unlock()
@@ -244,7 +250,9 @@ class Janitor<T> {
     func run(c:Cache<T>) {
         var ticker = Ticker(this.Interval, { 
             let count = c.ItemCount()
-            println("count: ${count}")
+            c.DeleteExpired()
+            let currCount = c.ItemCount()
+            println("clean expired item, count: ${count} => ${currCount}")
         })
     }
 }
