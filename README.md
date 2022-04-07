@@ -34,3 +34,16 @@ func main() {
     println("i: ${i}")
 }
 ```
+
+### api
+- `Add(k:string, v:T, d!:Duration)` 添加一个值，会检查值是否存在，存在时则返回错误
+- `Set(k:string, v:T, d!:Duration)` 设置值，不检查是否存在
+- `SetDefault(k:String, v:T)` 使用默认过期时间将项目添加到缓存，替换任何现有项目。
+- `Get(k:String):Option<T>` 获取一个值
+- `GetWithExpiration(k:String):Option<T*Int64>`  获取值和过期时间
+- `Items():HashMap<String, Item<T>>` 获取所有缓存的项目
+- `Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit>` 替换缓存的值
+- `Delete(k:String)` 删除一个项目
+- `DeleteExpired()` 删除所有已过期的项目
+- `ItemCount():Int64` 获取缓存项目数量
+- `Flush()` 清除掉所有缓存的项目
