@@ -15,6 +15,7 @@ extend Cache<T> where T <: Int64 {
                 // let num2:Int64 = v.Data + n
                 // this.items[k] = Item(num2, v.Expiration)
                 // 3. 编译失败，put方法找不到
+                // let num2:Int64 = v.Data + n
                 // let item = Item(num2, v.Expiration)
                 // this.items.put(k, item)
                 return Ok(())
