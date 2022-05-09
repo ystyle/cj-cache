@@ -1,6 +1,6 @@
 package cache
 from std import time.*
-from std import collection.HashMap, collection.Buffer
+from std import collection.HashMap, collection.ArrayList
 from std import sync.Mutex
 
 let NoExpiration = Duration.nanosecond(-1)
@@ -179,7 +179,7 @@ public class Cache<T> {
     }
 
     public func DeleteExpired() {
-        var evictedItems = Buffer<KeyValue<T>>()
+        var evictedItems = ArrayList<KeyValue<T>>()
         let now = Time.now().unixNano()
         this.mu.lock()
         for ((k, item) in this.items) {
