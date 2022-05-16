@@ -1,8 +1,9 @@
+package cache
+
 from std import unittest.*
 from std import unittest.testmacro.*
 
 from std import time.*
-from cj_cache import cache.*
 
 @Test
 func testCache():Unit {
