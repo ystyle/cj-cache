@@ -50,3 +50,7 @@ func main() {
 - `DeleteExpired()` 删除所有已过期的项目
 - `ItemCount():Int64` 获取缓存项目数量
 - `Flush()` 清除掉所有缓存的项目
+- `Save(w:WriteStream)` 把缓存写入WriteStream
+- `SaveFile(filename:String)` 把缓存写入文件
+- `Load(r:ReadStream)` 从ReadStream读取缓存
+- `LoadFile(filename:String)` 从文件读取缓存
