@@ -1,8 +1,8 @@
 {
-    "cjc_version": "0.27.1",
+    "cjc_version": "0.28.1",
     "organization": "ystyle",
     "name": "cj_cache",
-    "description": "nothing here",
+    "description": "基于内存的key value缓存， 适合单机程序。",
     "version": "1.0.0",
     "requires": {},
     "PackageRequires": {},
