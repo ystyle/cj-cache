@@ -39,6 +39,8 @@ func main() {
 ```
 
 ### api
+- `Cache<T>(defaultExpiration:Duration,cleanupInterval:Duration)` 创建缓存实例，defaultExpiration为过期时间， cleanupInterval为自动清除缓存的时间，需要大于0才会执行自动清理
+- `Cache<T>(defaultExpiration:Duration,cleanupInterval:Duration，items:HashMap<String, Item<T>)` 创建缓存实例，items： 设置初始的缓存项目
 - `Add(k:string, v:T, d!:Duration)` 添加一个值，会检查值是否存在，存在时则返回错误
 - `Set(k:string, v:T, d!:Duration)` 设置值，不检查是否存在
 - `SetDefault(k:String, v:T)` 使用默认过期时间将项目添加到缓存，替换任何现有项目。
@@ -54,3 +56,12 @@ func main() {
 - `SaveFile(filename:String)` 把缓存写入文件
 - `Load(r:ReadStream)` 从ReadStream读取缓存
 - `LoadFile(filename:String)` 从文件读取缓存
+- 当T为Int相关类型时有以下扩展方法
+  - `IncrementInt8(k:String, n:T):Result<Unit>` Int8自增
+  - `IncrementInt16(k:String, n:T):Result<Unit>` Int16自增
+  - `IncrementInt32(k:String, n:T):Result<Unit>` Int32自增
+  - `IncrementInt(k:String, n:T):Result<Unit>` Int64自增
+  - `DecrementInt8(k:String, n:T):Result<Unit>` Int8自减
+  - `DecrementInt16(k:String, n:T):Result<Unit>` Int16自减
+  - `DecrementInt32(k:String, n:T):Result<Unit>` Int32自减
+  - `DecrementInt(k:String, n:T):Result<Unit>` Int64自减
