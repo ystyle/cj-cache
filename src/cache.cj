@@ -155,9 +155,13 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func Set(k:String,v:T, d!:Duration = NoExpiration) {
-        var e:Int64 = d.microseconds()
-        if (d == DefaultExpiration) {
-            e = this.defaultExpiration.microseconds()
+        var d1 = d
+        var e:Int64 = 0
+        if (d1 == DefaultExpiration) {
+            d1 = this.defaultExpiration
+        }
+        if (d1 > Duration.nanosecond(0)) {
+            e = (Time.now() + d).unixNano()
         }
         synchronized(this.mu) {
             this.items.put(k, Item<T>(v, e))
@@ -165,9 +169,13 @@ public class Cache<T> where T <: Serializable<T> {
     }
 
     private func set(k:String,v:T, d!:Duration = DefaultExpiration) {
-        var e:Int64 = d.nanoseconds()
-        if (d == DefaultExpiration) {
-            e = this.defaultExpiration.microseconds()
+        var d1 = d
+        var e:Int64 = 0
+        if (d1 == DefaultExpiration) {
+            d1 = this.defaultExpiration
+        }
+        if (d1 > Duration.nanosecond(0)) {
+            e = (Time.now() + d).unixNano()
         }
         this.items.put(k, Item<T>(v, e))
     }
@@ -306,13 +314,8 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func Delete(k:String) {
-        var r:Option<T>
         synchronized(this.mu) {
-            r = this.delete(k)
-        }
-        match (r) {
-            case None => ()
-            case Some(v) => this.onEvicted?(k, v)
+            this.delete(k)
         }
     }
 
