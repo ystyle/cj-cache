@@ -150,11 +150,11 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @param k Set the value
      * @param v String value
-     * @param d Do not expire if not filled in
+     * @param d Set defaultExpiration if not filled in
      *
      * @since 0.28.4
      */
-    public func Set(k:String,v:T, d!:Duration = NoExpiration) {
+    public func Set(k:String,v:T, d!:Duration = DefaultExpiration) {
         var d1 = d
         var e:Int64 = 0
         if (d1 == DefaultExpiration) {
