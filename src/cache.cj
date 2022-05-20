@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) Cangjie Library Team 2022-2022. All rights resvered.
+ */
+
+/**
+ * @file
+ * 
+ * Create cache instance and operation
+ */
 package cache
 from std import time.*
 from std import collection.HashMap, collection.ArrayList
@@ -9,24 +18,46 @@ from encoding import json.*
 let NoExpiration = Duration.nanosecond(-1)
 let DefaultExpiration = Duration.nanosecond(0)
 
-/**
-  * Item 缓存项定义
-  */
+/*
+ * Item Cache item definition
+ * 
+ * @author @ystyle
+ * @since 0.28.4
+ */
 public record Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
     var Data:T
     var Expiration:Int64 = 0
+
+    /*
+     * Item initialization
+     *
+     * @param data Cache data
+     *
+     * @since 0.28.4
+     */
     public init(data:T) {
         this.Data = data
     }
 
+    /*
+     * Item initialization
+     *
+     * @param data Cache data
+     * @param expiration Expiration value
+     *
+     * @since 0.28.4
+     */
     public init(data:T, expiration:Int64) {
         this.Data = data
         this.Expiration = expiration
     }
 
-    /**
-      * 判断是否过期
-      */
+    /*
+     * Determine whether it is expired
+     *
+     * @return Bool 
+     * @since 0.28.4
+     */
     public func Expired(): Bool {
         if (this.Expiration == 0) {
             return false
@@ -34,9 +65,23 @@ public record Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
         return Time.now().unixNano() > this.Expiration
     }
 
+    /**
+     * Change the data serialization
+     *
+     * @return DataModel The return type of DataModel
+     * @since 0.28.4
+     */
     public func serialize(): DataModel {
         return DataModelStruct().add(field<T>("data", this.Data)).add(field<Int64>("expiration", this.Expiration))
     }
+    /**
+     * DataModel deserialize
+     *
+     * @param dm DataModel
+     *
+     * @return Item The return type of Item<T>
+     * @since 0.28.4
+     */
     public static func deserialize(dm: DataModel): Item<T> {
         var dms = match (dm) {
             case data: DataModelStruct => data
@@ -48,19 +93,47 @@ public record Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
     }
 }
 
-/**
-  * 缓存
-  */
+/*
+ * Cache
+ * 
+ * @author @ystyle
+ * @since 0.28.4
+ */
 public class Cache<T> where T <: Serializable<T> {
-    protected var defaultExpiration:Duration // 默认过期时间
-    protected var items:HashMap<String, Item<T>> // 项目
-    protected var mu:Mutex // 锁
-    protected var onEvicted:Option<(String, T) -> Unit> // 删除项目时的回调方法
-    private var janitor:?Janitor<T> = None // 管理并删除过期的项目
+    /* Default expiration time */
+    protected var defaultExpiration:Duration
+    /* item */
+    protected var items:HashMap<String, Item<T>>
+    /* lock */
+    protected var mu:Mutex
+    /* Callback method when deleting an item */
+    protected var onEvicted:Option<(String, T) -> Unit>
+    /* Manage and delete expired items */
+    private var janitor:?Janitor<T> = None
     
+    /**
+     * Create cache instance
+     *
+     * @param defaultExpiration Default expiration time
+     * @param cleanupInterval Time to automatically clear cache
+     *                        Greater than 0 is required to perform automatic cleanup
+     * @param items Set initial cache entry
+     *
+     * @since 0.28.4
+     */
     public init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
         this(defaultExpiration, cleanupInterval)
     }
+
+    /**
+     * Create cache instance
+     *
+     * @param defaultExpiration Default expiration time
+     * @param cleanupInterval Time to automatically clear cache
+     *                        Greater than 0 is required to perform automatic cleanup
+     *
+     * @since 0.28.4
+     */
     public init(defaultExpiration:Duration, cleanupInterval:Duration) {
         this.defaultExpiration = defaultExpiration
         this.items = HashMap()
@@ -73,10 +146,13 @@ public class Cache<T> where T <: Serializable<T> {
     }
 
     /**
-     * 设置值, 不检查是否已存在
-     * @param k:String key
-     * @param v:String value
-     * @param d!:Duration 不填写时不过期
+     * Set the value without checking whether it already exists
+     *
+     * @param k Set the value
+     * @param v String value
+     * @param d Do not expire if not filled in
+     *
+     * @since 0.28.4
      */
     public func Set(k:String,v:T, d!:Duration = NoExpiration) {
         var e:Int64 = d.microseconds()
@@ -97,8 +173,13 @@ public class Cache<T> where T <: Serializable<T> {
     }
 
     /**
-      * 使用默认过期时间添加一个项目
-      */
+     * Add items to the cache using the default expiration time, replacing any existing items.
+     *
+     * @param k Set the value
+     * @param v String value
+     *
+     * @since 0.28.4
+     */
     public func SetDefault(k:String,v:T) {
         this.Set(k, v)
     }
@@ -118,8 +199,14 @@ public class Cache<T> where T <: Serializable<T> {
     }
 
     /**
-      * 添加一个项目
-      */
+     * Adding a value will check whether the value exists. If it exists, an error will be returned
+     *
+     * @param k Set the value
+     * @param v String value
+     * @param d Do not expire if not filled in
+     *
+     * @since 0.28.4
+     */
     public func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
@@ -132,8 +219,14 @@ public class Cache<T> where T <: Serializable<T> {
     }
 
     /**
-      * 替代项目
-      */
+     * Replace cached values
+     *
+     * @param k Set the value
+     * @param v String value
+     * @param d Do not expire if not filled in
+     *
+     * @since 0.28.4
+     */
     public func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
@@ -145,6 +238,14 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Get a value
+     *
+     * @param k The value
+     *
+     * @return Option<T> The return type of Option<T>
+     * @since 0.28.4
+     */
     public func Get(k:String):Option<T> {
         synchronized (this.mu) {
             if (this.items.contains(k)) {
@@ -161,6 +262,14 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Get value and expiration time
+     *
+     * @param k The value
+     *
+     * @return Option<T*Int64> The return type of Option<T>
+     * @since 0.28.4
+     */
     public func GetWithExpiration(k:String):Option<T*Int64> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
@@ -189,6 +298,13 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Delete an item
+     *
+     * @param k The value
+     *
+     * @since 0.28.4
+     */
     public func Delete(k:String) {
         var r:Option<T>
         synchronized(this.mu) {
@@ -200,6 +316,11 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Delete all expired items
+     *
+     * @since 0.28.4
+     */
     public func DeleteExpired() {
         var evictedItems = ArrayList<KeyValue<T>>()
         let now = Time.now().unixNano()
@@ -220,12 +341,25 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Set a callback. When deleting a key, it will call the set method for notification
+     *
+     * @param fn Callback
+     *
+     * @since 0.28.4
+     */
     public func OnEvicted(fn: (String, T) -> Unit) {
         synchronized (this.mu) {
             this.onEvicted = fn
         }
     }
 
+    /**
+     * Get all cached items
+     *
+     * @return HashMap<String, Item<T>> cached items
+     * @since 0.28.4
+     */
     public func Items():HashMap<String, Item<T>> {
         let m = HashMap<String, Item<T>>(this.items.size())
         let now = Time.now().unixNano()
@@ -242,6 +376,12 @@ public class Cache<T> where T <: Serializable<T> {
         return m
     }
 
+    /**
+     * Get the number of cached items
+     *
+     * @return Int64 Number
+     * @since 0.28.4
+     */
     public func ItemCount():Int64 {
         var n:Int64
         synchronized(this.mu) {
@@ -250,12 +390,24 @@ public class Cache<T> where T <: Serializable<T> {
         return n
     }
 
+    /**
+     * Clear all cached items
+     *
+     * @since 0.28.4
+     */
     public func Flush() {
         synchronized(this.mu) {
             this.items.clear()
         }
     }
 
+    /**
+     * Write cache to writestream
+     *
+     * @param w Writestream
+     *
+     * @since 0.28.4
+     */
     public func Save (w:WriteStream) {
         synchronized(this.mu) {
             let m: DataModel = this.items.serialize()
@@ -263,6 +415,13 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Write cache to file
+     *
+     * @param filename File name
+     *
+     * @since 0.28.4
+     */
     public func SaveFile(filename:String) {
         var fs = FileStream(filename)
         fs.openFile()
@@ -271,6 +430,13 @@ public class Cache<T> where T <: Serializable<T> {
         fs.close()
     }
 
+    /**
+     * Read cache from readstream
+     *
+     * @param r ReadStream
+     *
+     * @since 0.28.4
+     */
     public func Load(r:ReadStream) {
         r.seek(0, SeekOrigin.BeginPos)
         let b = ArrayList<UInt8>()
@@ -294,6 +460,13 @@ public class Cache<T> where T <: Serializable<T> {
         }
     }
 
+    /**
+     * Read cache from file
+     *
+     * @param filename File name
+     *
+     * @since 0.28.4
+     */
     public func Loadfile(filename:String) {
          var fs = FileStream(filename)
         fs.openFile()
@@ -312,6 +485,11 @@ public record KeyValue<T> where T <: Serializable<T> {
     }
 }
 
+/*
+ * The class is Janitor<T> where T inherited from Serializable<T>
+ * @author @ystyle
+ * @since 0.28.4
+ */
 class Janitor<T> where T <: Serializable<T> {
     let Interval:Duration
     init(interval:Duration) {
