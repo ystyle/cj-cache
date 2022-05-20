@@ -211,7 +211,7 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @param k Set the value
      * @param v String value
-     * @param d Do not expire if not filled in
+     * @param d Set defaultExpiration if not filled in
      *
      * @since 0.28.4
      */
@@ -231,7 +231,7 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @param k Set the value
      * @param v String value
-     * @param d Do not expire if not filled in
+     * @param d Set defaultExpiration if not filled in
      *
      * @since 0.28.4
      */
