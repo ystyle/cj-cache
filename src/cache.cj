@@ -123,7 +123,7 @@ public class Cache<T> where T <: Serializable<T> {
      */
     public init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
         this.defaultExpiration = defaultExpiration
-        this.items = item
+        this.items = items
         this.mu = Mutex()
         this.onEvicted = None
         if (cleanupInterval.nanoseconds() > 0) {
@@ -192,19 +192,19 @@ public class Cache<T> where T <: Serializable<T> {
         this.Set(k, v)
     }
 
-    private func get(k:String):Option<T> {
-        if (this.items.contains(k)) {
-            let v = this.items[k]
-            if (v.Expiration > 0) {
-                if (Time.now().unixNano() > v.Expiration) {
-                    return None
-                }
-             }
-             return v.Data
-        } else {
-            return None
-        }
-    }
+    //private func get(k:String):Option<T> {
+    //    if (this.items.contains(k)) {
+    //        let v = this.items[k]
+    //        if (v.Expiration > 0) {
+    //            if (Time.now().unixNano() > v.Expiration) {
+    //                return None
+    //            }
+    //         }
+    //         return v.Data
+    //    } else {
+    //        return None
+    //    }
+    //}
 
     /**
      * Adding a value will check whether the value exists. If it exists, an error will be returned
