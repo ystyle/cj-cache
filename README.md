@@ -6,7 +6,7 @@
 <img alt="" src="https://badg.now.sh/badge/release/v0.0.1?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/build/pass?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/cjc/v0.28.4?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/cjcov/0%25?color=green" style="display: inline-block;" />
+<img alt="" src="https://badg.now.sh/badge/cjcov/93%25?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/project/open?color=green" style="display: inline-block;" />
 </p>
 
@@ -141,37 +141,21 @@ public func Decrement(k: String, n: T):Result<Unit>
 
 ### 使用
 
-- 下载代码并创建 cpm 项目，cj-cache 和需要使用的项目目录平级(否则自行修改依赖的 path 字段)
+引入 testJekins 包,保持原目录结构
 
-```shell
-$ cd ~/CodeToCangjie
-$ git clone https://gitee.com/HW-PLLab/cj-cache.git
-$ mkdir cjcache-demo
-$ cd cjcache-demo
-$ cpm new test demo
+地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 cj-cache 根目录下
 
 ```
-- 在 `cjcache-demo/module.json` 添加 `requires`
-```json
-"requires": {
-    "cj_cache": {
-		"organization": "ystyle",
-		"version":"1.0.0",
-		"path": "../cj-cache"
-	}
-}
-```
-
-- 导入包
-
-```cj
-from cj_cache import cache.*
+git clone https://gitee.com/HW-PLLab/testJekins
+apt-get install python3
+python3 ci_test/main.py build
+python3 ci_test/main.py test
 ```
 
 ### 示例
 
 ```
-from cj_cache import cache.*
+import cache.*
 from std import time.*
 
 main() {
