@@ -122,7 +122,14 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
-        this(defaultExpiration, cleanupInterval)
+        this.defaultExpiration = defaultExpiration
+        this.items = item
+        this.mu = Mutex()
+        this.onEvicted = None
+        if (cleanupInterval.nanoseconds() > 0) {
+            this.janitor = Janitor<T>(cleanupInterval)
+            this.janitor?.run(this)
+        }
     }
 
     /**
@@ -135,14 +142,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public init(defaultExpiration:Duration, cleanupInterval:Duration) {
-        this.defaultExpiration = defaultExpiration
-        this.items = HashMap()
-        this.mu = Mutex()
-        this.onEvicted = None
-        if (cleanupInterval.nanoseconds() > 0) {
-            this.janitor = Janitor<T>(cleanupInterval)
-            this.janitor?.run(this)
-        }
+        this(defaultExpiration, cleanupInterval, HashMap())
     }
 
     /**
