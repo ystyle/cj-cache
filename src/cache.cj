@@ -161,7 +161,7 @@ public class Cache<T> where T <: Serializable<T> {
             d1 = this.defaultExpiration
         }
         if (d1 > Duration.nanosecond(0)) {
-            e = (Time.now() + d).unixNano()
+            e = (Time.now() + d1).unixNano()
         }
         synchronized(this.mu) {
             this.items.put(k, Item<T>(v, e))
@@ -175,7 +175,7 @@ public class Cache<T> where T <: Serializable<T> {
             d1 = this.defaultExpiration
         }
         if (d1 > Duration.nanosecond(0)) {
-            e = (Time.now() + d).unixNano()
+            e = (Time.now() + d1).unixNano()
         }
         this.items.put(k, Item<T>(v, e))
     }
