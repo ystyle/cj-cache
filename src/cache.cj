@@ -328,15 +328,19 @@ public class Cache<T> where T <: Serializable<T> {
         var evictedItems = ArrayList<KeyValue<T>>()
         let now = Time.now().unixNano()
         synchronized(this.mu) {
+            var keys = ArrayList<String>()
             for ((k, item) in this.items) {
                 if (item.Expiration > 0 && now > item.Expiration) {
-                    let r = this.delete(k)
-                    match (r) {
-                        case None => ()
-                        case Some(ov) => 
-                            evictedItems.add(KeyValue<T>(k, ov))
-                    }           
+                    keys.add(k)
                 }
+            }
+            for (key in keys) {
+                let r = this.delete(key)
+                match (r) {
+                    case None => ()
+                    case Some(ov) => 
+                        evictedItems.add(KeyValue<T>(key, ov))
+                }       
             }
         }
         for (item in evictedItems) {
