@@ -192,19 +192,19 @@ public class Cache<T> where T <: Serializable<T> {
         this.Set(k, v)
     }
 
-    //private func get(k:String):Option<T> {
-    //    if (this.items.contains(k)) {
-    //        let v = this.items[k]
-    //        if (v.Expiration > 0) {
-    //            if (Time.now().unixNano() > v.Expiration) {
-    //                return None
-    //            }
-    //         }
-    //         return v.Data
-    //    } else {
-    //        return None
-    //    }
-    //}
+    private func has(k:String):Bool {
+       if (this.items.contains(k)) {
+           let v = this.items[k]
+           if (v.Expiration > 0) {
+               if (Time.now().unixNano() > v.Expiration) {
+                   return false
+               }
+            }
+            return true
+       } else {
+           return false
+       }
+    }
 
     /**
      * Adding a value will check whether the value exists. If it exists, an error will be returned
@@ -217,7 +217,7 @@ public class Cache<T> where T <: Serializable<T> {
      */
     public func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
         synchronized(this.mu) {
-            if (this.items.contains(k)) {
+            if (this.has(k)) {
                 return Err(Exception("Item ${k} already exists"))
             } else  {
                 this.set(k, v, d:d)
@@ -237,7 +237,7 @@ public class Cache<T> where T <: Serializable<T> {
      */
     public func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
         synchronized(this.mu) {
-            if (this.items.contains(k)) {
+            if (this.has(k)) {
                 this.set(k, v, d:d)
                 return Ok(())
             } else {
