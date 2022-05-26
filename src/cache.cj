@@ -21,7 +21,7 @@ let DefaultExpiration = Duration.nanosecond(0)
 /*
  * Item Cache item definition
  * 
- * @author @ystyle
+ * @author ystyle
  * @since 0.28.4
  */
 public record Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
@@ -96,7 +96,7 @@ public record Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
 /*
  * Cache
  * 
- * @author @ystyle
+ * @author ystyle
  * @since 0.28.4
  */
 public class Cache<T> where T <: Serializable<T> {
@@ -494,7 +494,7 @@ public record KeyValue<T> where T <: Serializable<T> {
 
 /*
  * The class is Janitor<T> where T inherited from Serializable<T>
- * @author @ystyle
+ * @author ystyle
  * @since 0.28.4
  */
 class Janitor<T> where T <: Serializable<T> {
