@@ -10,7 +10,7 @@
 package cache
 from std import time.*
 from std import collection.HashMap, collection.ArrayList
-from std import sync.Mutex
+from std import sync.*
 from std import io.WriteStream,io.FileStream, io.ReadStream, io.SeekOrigin
 from serialization import serialization.*
 from encoding import json.*
@@ -105,7 +105,7 @@ public class Cache<T> where T <: Serializable<T> {
     /* item */
     protected var items:HashMap<String, Item<T>>
     /* lock */
-    protected var mu:Mutex
+    protected var mu:ReentrantMutex
     /* Callback method when deleting an item */
     protected var onEvicted:Option<(String, T) -> Unit>
     /* Manage and delete expired items */
@@ -124,7 +124,7 @@ public class Cache<T> where T <: Serializable<T> {
     public init(defaultExpiration:Duration, cleanupInterval:Duration, items:HashMap<String, Item<T>>) {
         this.defaultExpiration = defaultExpiration
         this.items = items
-        this.mu = Mutex()
+        this.mu = ReentrantMutex()
         this.onEvicted = None
         if (cleanupInterval.nanoseconds() > 0) {
             this.janitor = Janitor<T>(cleanupInterval)
@@ -278,7 +278,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @return Option<T*Int64> The return type of Option<T>
      * @since 0.28.4
      */
-    public func GetWithExpiration(k:String):Option<T*Int64> {
+    public func GetWithExpiration(k:String):Option<(T,Int64)> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 let v = this.items[k]
