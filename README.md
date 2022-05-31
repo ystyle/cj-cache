@@ -5,7 +5,7 @@
 <p align="center">
 <img alt="" src="https://badg.now.sh/badge/release/v0.0.1?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/build/pass?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/cjc/v0.28.4?color=green" style="display: inline-block;" />
+<img alt="" src="https://badg.now.sh/badge/cjc/v0.29.3?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/cjcov/93%25?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/project/open?color=green" style="display: inline-block;" />
 </p>
@@ -14,7 +14,7 @@
 
 ## <img alt="" src="./doc/assets/readme-icon-introduction.png" style="display: inline-block;" width=3%/> 介绍
 
-基于内存的 key value 缓存，适合单机程序。 go-cache 的仓颉实现。
+基于内存的 key value 缓存，适合单机程序。 go-cache 的仓颉实现参考地址：https://github.com/patrickmn/go-cache。
 
 ### 特性
 
