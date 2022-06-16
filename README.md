@@ -3,14 +3,12 @@
 </p>
 
 <p align="center">
-<img alt="" src="https://badg.now.sh/badge/release/v0.0.1?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/build/pass?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/cjc/v0.29.3?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/cjcov/93%25?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/project/open?color=green" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/release-v0.0.1-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/build-pass-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/cjc-v0.29.3-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/cjcov-93%25-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/project-open-brightgreen" style="display: inline-block;" />
 </p>
-
-
 
 ## <img alt="" src="./doc/assets/readme-icon-introduction.png" style="display: inline-block;" width=3%/> 介绍
 
