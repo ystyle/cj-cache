@@ -11,7 +11,7 @@ package cache
 from std import time.*
 from std import collection.HashMap, collection.ArrayList
 from std import sync.*
-from std import io.WriteStream,io.FileStream, io.ReadStream, io.SeekOrigin
+from std import io.OutputStream, io.File, io.InputStream, io.AccessMode, io.OpenMode
 from serialization import serialization.*
 from encoding import json.*
 
@@ -24,7 +24,7 @@ let DefaultExpiration = Duration.nanosecond(0)
  * @author ystyle
  * @since 0.28.4
  */
-public record Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
+public struct Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
     var Data:T
     var Expiration:Int64 = 0
 
@@ -215,13 +215,13 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @since 0.28.4
      */
-    public func Add(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
+    public func Add(k:String,v:T, d!:Duration = DefaultExpiration):Bool {
         synchronized(this.mu) {
             if (this.has(k)) {
-                return Err(Exception("Item ${k} already exists"))
+                return false
             } else  {
                 this.set(k, v, d:d)
-                return Ok(())
+                return true
             }
         }
     }
@@ -235,13 +235,13 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @since 0.28.4
      */
-    public func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Result<Unit> {
+    public func Replace(k:String,v:T, d!:Duration = DefaultExpiration):Bool {
         synchronized(this.mu) {
             if (this.has(k)) {
                 this.set(k, v, d:d)
-                return Ok(())
+                return true
             } else {
-                return Err(Exception("Item ${k} doesn't exist"))
+                return false
             }
         }
     }
@@ -331,7 +331,7 @@ public class Cache<T> where T <: Serializable<T> {
             var keys = ArrayList<String>()
             for ((k, item) in this.items) {
                 if (item.Expiration > 0 && now > item.Expiration) {
-                    keys.add(k)
+                    keys.append(k)
                 }
             }
             for (key in keys) {
@@ -339,7 +339,7 @@ public class Cache<T> where T <: Serializable<T> {
                 match (r) {
                     case None => ()
                     case Some(ov) => 
-                        evictedItems.add(KeyValue<T>(key, ov))
+                        evictedItems.append(KeyValue<T>(key, ov))
                 }       
             }
         }
@@ -415,10 +415,11 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @since 0.28.4
      */
-    public func Save (w:WriteStream) {
+    public func Save (w:OutputStream) {
         synchronized(this.mu) {
             let m: DataModel = this.items.serialize()
             w. write(m.toJson().toString().toUtf8Array())
+            w.flush()
         }
     }
 
@@ -430,11 +431,11 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func SaveFile(filename:String) {
-        var fs = FileStream(filename)
-        fs.openFile()
-        this.Save(fs)
-        fs.flush()
-        fs.close()
+        try (fs = File(filename, AccessMode.Write, OpenMode.ForceCreate)){
+            this.Save(fs)
+            fs.close()
+        }
+        
     }
 
     /**
@@ -444,13 +445,12 @@ public class Cache<T> where T <: Serializable<T> {
      *
      * @since 0.28.4
      */
-    public func Load(r:ReadStream) {
-        r.seek(0, SeekOrigin.BeginPos)
+    public func Load(r:InputStream) {
         let b = ArrayList<UInt8>()
         while (true) {
             let bs = Array<UInt8>(512, item: 0)
             let n = r.read(bs)
-            b.addAll(bs[0..n])
+            b.appendAll(bs[0..n])
             if (n ==0 || n < 512) {
                 break
             }
@@ -475,15 +475,14 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func Loadfile(filename:String) {
-         var fs = FileStream(filename)
-        fs.openFile()
+         var fs = File(filename, AccessMode.Read, OpenMode.Open)
         this.Load(fs)
         fs.flush()
         fs.close()
     }
 }
 
-public record KeyValue<T> where T <: Serializable<T> {
+public struct KeyValue<T> where T <: Serializable<T> {
     var key:String
     var value:T
     init(key:String, value:T) {
@@ -507,7 +506,7 @@ class Janitor<T> where T <: Serializable<T> {
             let count = c.ItemCount()
             c.DeleteExpired()
             let currCount = c.ItemCount()
-            println("clean expired item, count: ${count} => ${currCount}")
+            println("clean expired items, count: ${count} => ${currCount}")
         })
     }
 }

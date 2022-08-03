@@ -9,7 +9,9 @@ main() {
     c.Add("1", 1)
     c.Add("2", 2)
     try {
-        c.Add("2", 3).getOrThrow()
+        if (!c.Add("2", 3)) {
+            throw Exception("Item 2 already exists")
+        }
     }catch(e: Exception) {
         println(e.toString()) //Exception: Item 2 already exists
     }

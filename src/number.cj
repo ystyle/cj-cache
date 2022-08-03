@@ -17,22 +17,22 @@ extend Cache<T> where T <: Int8 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func IncrementInt8(k:String, n:T):Result<Unit> {
+    public func IncrementInt8(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int8 = item.Data + n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -45,22 +45,22 @@ extend Cache<T> where T <: Int16 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func IncrementInt16(k:String, n:T):Result<Unit> {
+    public func IncrementInt16(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int16 = item.Data + n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -73,22 +73,22 @@ extend Cache<T> where T <: Int32 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func IncrementInt32(k:String, n:T):Result<Unit> {
+    public func IncrementInt32(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int32 = item.Data + n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -101,22 +101,22 @@ extend Cache<T> where T <: Int64 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func Increment(k:String, n:T):Result<Unit> {
+    public func Increment(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int64 = item.Data + n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -129,22 +129,22 @@ extend Cache<T> where T <: Int8 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func DecrementInt8(k:String, n:T):Result<Unit> {
+    public func DecrementInt8(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int8 = item.Data - n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -157,22 +157,22 @@ extend Cache<T> where T <: Int16 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func DecrementInt16(k:String, n:T):Result<Unit> {
+    public func DecrementInt16(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int16 = item.Data - n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -185,22 +185,22 @@ extend Cache<T> where T <: Int32 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func DecrementInt32(k:String, n:T):Result<Unit> {
+    public func DecrementInt32(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int32 = item.Data - n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }
@@ -213,22 +213,22 @@ extend Cache<T> where T <: Int64 {
      * @param k key
      * @param n Increment number
      *
-     * @return Result<Unit> Return result
+     * @return Option<T> Return result
      * @since 0.28.4
      */
-    public func Decrement(k:String, n:T):Result<Unit> {
+    public func Decrement(k:String, n:T):Option<T> {
         synchronized(this.mu) {
             if (this.items.contains(k)) {
                 var item = this.items[k]
                 if (item.Expired()) {
-                    return Err(Exception("Item ${k} not found"))
+                    return None
                 }
                 let num:Int64 = item.Data - n
                 let x :?T =num as T 
                 this.items[k] = Item<T>(x??n, item.Expiration)
-                return Ok(())
+                return x
             } else {
-                return Err(Exception("Item ${k} not found"))
+                return None
             }
         }
     }

@@ -4,3 +4,10 @@ bin
 build
 unittest
 string.json
+ci_lib
+ci_test
+testJekins
+cache.cjo
+cache.gcda
+cache.gcno
+lib.o
