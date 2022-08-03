@@ -64,11 +64,11 @@ public func Set(k: String, v: T, d!: Duration = NoExpiration)
 使用默认过期时间将项目添加到缓存，替换任何现有项目
 public func SetDefault(k: String,v: T)
 
-添加一个值，会检查值是否存在，存在时则返回错误
-public func Add(k: String, v: T, d!: Duration = DefaultExpiration): Result<Unit>
+添加一个值，会检查值是否存在，值已经存在时则返回false, 添加成功时返回true
+public func Add(k: String, v: T, d!: Duration = DefaultExpiration): Bool
 
-替换缓存的值
-public func Replace(k: String, v: T, d!: Duration = DefaultExpiration): Result<Unit>
+替换缓存的值, 会检查值是否存在，key不存在时返回false, 替换成功时返回true
+public func Replace(k: String, v: T, d!: Duration = DefaultExpiration): Bool
 
 获取一个值
 public func Get(k: String): Option<T>
@@ -108,10 +108,11 @@ public func Loadfile(filename: String)
 ```
 
 #### 当 T 为 Int 相关类型时有以下扩展方法
+> 自增成功时返回结果值, 不成功则返回None
 
 ```
 Int8 自增
-public func IncrementInt8(k: String, n: T):Result<Unit>
+public func IncrementInt8(k: String, n: T):Option<T>
 
 Int16 自增
 public func IncrementInt16(k: String, n: T): Result<Unit>
