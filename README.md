@@ -1,6 +1,6 @@
-<p align="center">
-<img src="./doc/assets/logo.png" width="60%" >
-</p>
+<div align="center">
+<h1>cj-cache</h1>
+</div>
 
 <p align="center">
 <img alt="" src="https://img.shields.io/badge/release-v0.0.1-brightgreen" style="display: inline-block;" />
