@@ -1,4 +1,4 @@
-import cache.*
+from cj_cache import cache.*
 from std import time.*
 from std import collection.HashMap
 

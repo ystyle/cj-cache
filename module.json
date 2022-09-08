@@ -1,0 +1,16 @@
+{
+  "cjc_version": "0.32.5",
+  "organization": "ystyle",
+  "name": "cj_cache",
+  "description": "nothing here",
+  "version": "1.0.0",
+  "requires": {},
+  "package_requires": {},
+  "foreign_requires": {},
+  "output_type": "dynamic",
+  "command_option": "",
+  "condition_option": {},
+  "link_option": "",
+  "cross_compile_configuration": {},
+  "package_configuration": {}
+}
