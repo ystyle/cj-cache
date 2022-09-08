@@ -368,7 +368,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func Items():HashMap<String, Item<T>> {
-        let m = HashMap<String, Item<T>>(this.items.size())
+        let m = HashMap<String, Item<T>>(this.items.size)
         let now = Time.now().unixNano()
         synchronized(this.mu) {
             for ((key, item) in this.items) {
@@ -392,7 +392,7 @@ public class Cache<T> where T <: Serializable<T> {
     public func ItemCount():Int64 {
         var n:Int64
         synchronized(this.mu) {
-            n = this.items.size()
+            n = this.items.size
         }
         return n
     }
@@ -502,7 +502,7 @@ class Janitor<T> where T <: Serializable<T> {
         this.Interval = interval
     }
     func run(c:Cache<T>) {
-        var ticker = Ticker(this.Interval, { 
+        var ticker = Ticker(this.Interval, { =>
             let count = c.ItemCount()
             c.DeleteExpired()
             let currCount = c.ItemCount()

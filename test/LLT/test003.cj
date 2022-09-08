@@ -1,5 +1,5 @@
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
 import cache.*
 from std import time.*
