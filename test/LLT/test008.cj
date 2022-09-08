@@ -1,7 +1,7 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-import cache.*
+from cj_cache import cache.*
 from std import time.*
 
 main() {

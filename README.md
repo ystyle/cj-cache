@@ -154,7 +154,7 @@ python3 ci_test/main.py test
 ### 示例
 
 ```
-import cache.*
+from cj_cache import cache.*
 from std import time.*
 
 main() {
