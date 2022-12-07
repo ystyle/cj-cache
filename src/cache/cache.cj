@@ -11,7 +11,8 @@ package cache
 from std import time.*
 from std import collection.HashMap, collection.ArrayList
 from std import sync.*
-from std import io.OutputStream, io.File, io.InputStream, io.AccessMode, io.OpenMode
+from std import io.*
+from std import fs.*
 from serialization import serialization.*
 from encoding import json.*
 
@@ -431,7 +432,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func SaveFile(filename:String) {
-        try (fs = File(filename, AccessMode.Write, OpenMode.ForceCreate)){
+        try (fs = File(filename, Open(true, true))){
             this.Save(fs)
             fs.close()
         }
@@ -475,7 +476,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func Loadfile(filename:String) {
-         var fs = File(filename, AccessMode.Read, OpenMode.Open)
+         var fs = File(filename, Open(true, true))
         this.Load(fs)
         fs.flush()
         fs.close()
