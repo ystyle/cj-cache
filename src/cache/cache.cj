@@ -11,12 +11,12 @@ package cache
 from std import time.*
 from std import collection.HashMap, collection.ArrayList
 from std import sync.*
-from std import io.OutputStream, io.File, io.InputStream, io.AccessMode, io.OpenMode
+from std import io.OutputStream, fs.File, io.InputStream, fs.OpenOption
 from serialization import serialization.*
 from encoding import json.*
 
-let NoExpiration = Duration.nanosecond(-1)
-let DefaultExpiration = Duration.nanosecond(0)
+let NoExpiration = Duration.nanosecond * -1
+let DefaultExpiration = Duration.nanosecond * 0
 
 /*
  * Item Cache item definition
@@ -62,7 +62,7 @@ public struct Item<T> <: Serializable<Item<T>> where T <: Serializable<T> {
         if (this.Expiration == 0) {
             return false
         }
-        return Time.now().unixNano() > this.Expiration
+        return DateTime.now().toUnixTimeStamp().toNanoseconds() > this.Expiration
     }
 
     /**
@@ -126,7 +126,7 @@ public class Cache<T> where T <: Serializable<T> {
         this.items = items
         this.mu = ReentrantMutex()
         this.onEvicted = None
-        if (cleanupInterval.nanoseconds() > 0) {
+        if (cleanupInterval.toNanoseconds() > 0) {
             this.janitor = Janitor<T>(cleanupInterval)
             this.janitor?.run(this)
         }
@@ -160,8 +160,8 @@ public class Cache<T> where T <: Serializable<T> {
         if (d1 == DefaultExpiration) {
             d1 = this.defaultExpiration
         }
-        if (d1 > Duration.nanosecond(0)) {
-            e = (Time.now() + d1).unixNano()
+        if (d1 > (Duration.nanosecond * 0)) {
+            e = (DateTime.now() + d1).toUnixTimeStamp().toNanoseconds()
         }
         synchronized(this.mu) {
             this.items.put(k, Item<T>(v, e))
@@ -174,8 +174,8 @@ public class Cache<T> where T <: Serializable<T> {
         if (d1 == DefaultExpiration) {
             d1 = this.defaultExpiration
         }
-        if (d1 > Duration.nanosecond(0)) {
-            e = (Time.now() + d1).unixNano()
+        if (d1 > Duration.nanosecond * 0) {
+            e = (DateTime.now() + d1).toUnixTimeStamp().toNanoseconds() //.unixNano()
         }
         this.items.put(k, Item<T>(v, e))
     }
@@ -196,7 +196,7 @@ public class Cache<T> where T <: Serializable<T> {
        if (this.items.contains(k)) {
            let v = this.items[k]
            if (v.Expiration > 0) {
-               if (Time.now().unixNano() > v.Expiration) {
+               if (DateTime.now().toUnixTimeStamp().toNanoseconds() > v.Expiration) {
                    return false
                }
             }
@@ -259,7 +259,7 @@ public class Cache<T> where T <: Serializable<T> {
             if (this.items.contains(k)) {
                 let v = this.items[k]
                 if (v.Expiration >0) {
-                    if (Time.now().unixNano() > v.Expiration) {
+                    if (DateTime.now().toUnixTimeStamp().toNanoseconds() > v.Expiration) {
                         return None
                     }
                 }
@@ -283,7 +283,7 @@ public class Cache<T> where T <: Serializable<T> {
             if (this.items.contains(k)) {
                 let v = this.items[k]
                 if (v.Expiration > 0) {
-                    if (Time.now().unixNano() > v.Expiration) {
+                    if (DateTime.now().toUnixTimeStamp().toNanoseconds() > v.Expiration) {
                         return None
                     }
                     return (v.Data, v.Expiration)
@@ -326,7 +326,7 @@ public class Cache<T> where T <: Serializable<T> {
      */
     public func DeleteExpired() {
         var evictedItems = ArrayList<KeyValue<T>>()
-        let now = Time.now().unixNano()
+        let now = DateTime.now().toUnixTimeStamp().toNanoseconds()
         synchronized(this.mu) {
             var keys = ArrayList<String>()
             for ((k, item) in this.items) {
@@ -369,7 +369,7 @@ public class Cache<T> where T <: Serializable<T> {
      */
     public func Items():HashMap<String, Item<T>> {
         let m = HashMap<String, Item<T>>(this.items.size)
-        let now = Time.now().unixNano()
+        let now = DateTime.now().toUnixTimeStamp().toNanoseconds()
         synchronized(this.mu) {
             for ((key, item) in this.items) {
                 if (item.Expiration > 0) {
@@ -431,7 +431,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func SaveFile(filename:String) {
-        try (fs = File(filename, AccessMode.Write, OpenMode.ForceCreate)){
+        try (fs = File(filename, OpenOption.Open(true, true))){
             this.Save(fs)
             fs.close()
         }
@@ -475,7 +475,7 @@ public class Cache<T> where T <: Serializable<T> {
      * @since 0.28.4
      */
     public func Loadfile(filename:String) {
-         var fs = File(filename, AccessMode.Read, OpenMode.Open)
+         var fs = File(filename, Open(true, true))
         this.Load(fs)
         fs.flush()
         fs.close()
@@ -502,7 +502,7 @@ class Janitor<T> where T <: Serializable<T> {
         this.Interval = interval
     }
     func run(c:Cache<T>) {
-        var ticker = Ticker(this.Interval, { =>
+        Timer(start: this.Interval, task: { =>
             let count = c.ItemCount()
             c.DeleteExpired()
             let currCount = c.ItemCount()

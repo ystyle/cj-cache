@@ -1,13 +1,13 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-import cache.*
+from cj_cache import cache.*
 from std import time.*
 from std import collection.HashMap
 
 
-main() {
-    let c = Cache<Int64>(Duration.minute(5) , Duration.minute(10))
+main():Int64 {
+    let c = Cache<Int64>(Duration.minute*5, Duration.minute*10)
     c.Set("1", 1)
     try{
         c.Increment("2", 5).getOrThrow()

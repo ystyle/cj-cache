@@ -12,3 +12,5 @@ cache.gcda
 cache.gcno
 lib.o
 module-resolve.json
+module-lock.json
+.cjpm-history
