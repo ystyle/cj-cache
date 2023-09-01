@@ -7,7 +7,7 @@ from std import collection.HashMap
 
 
 main() {
-    let c = Cache<Int8>(Duration.minute(5) , Duration.minute(10))
+    let c = Cache<Int8>(Duration.minute*5 , Duration.minute*10)
     c.Set("1", 1)
     try{
         c.IncrementInt8("2", 5).getOrThrow()

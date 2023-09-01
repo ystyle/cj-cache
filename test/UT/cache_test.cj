@@ -7,7 +7,7 @@ from std import time.*
 
 @Test
 func testCache():Unit {
-    let tc = Cache<String>(Duration.minute(5), Duration.second(0))
+    let tc = Cache<String>(Duration.minute*5, Duration.second*0)
     match(tc.Get("a")) {
         case None => ()
         case Some(v) => throw Exception("Getting A found value that shouldn't exist: ${v}")
@@ -24,7 +24,7 @@ func testCache():Unit {
 
 @Test
 func testIncrCache():Unit {
-    let tc = Cache<Int64>(Duration.minute(5), Duration.second(0))
+    let tc = Cache<Int64>(Duration.minute*5, Duration.second*0)
     match(tc.Get("a")) {
         case None => ()
         case Some(v) => throw Exception("Getting A found value that shouldn't exist: ${v}")
@@ -48,7 +48,7 @@ func testIncrCache():Unit {
 
 @Test
 func testInt64():Unit {
-    let tc = Cache<Int64>(Duration.minute(5), Duration.second(0))
+    let tc = Cache<Int64>(Duration.minute*5, Duration.second*0)
     tc.Set("i", 1)
     for (i in 1..10) {
         tc.Increment("i", 10)
@@ -59,7 +59,7 @@ func testInt64():Unit {
 
 @Test
 func testSave():Unit {
-    let tc = Cache<String>(Duration.minute(5), Duration.second(0))
+    let tc = Cache<String>(Duration.minute*5, Duration.second*0)
     for (i in 1..10) {
        tc.Set("i-${i}", "${i}")
     }
