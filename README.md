@@ -110,7 +110,7 @@ public func Loadfile(filename: String)
 #### 当 T 为 Int 相关类型时有以下扩展方法
 > 自增成功时返回结果值, 不成功则返回None
 
-```
+```cj
 自增
 public func Increment(k: String, n: T):Option<T>
 
@@ -122,11 +122,9 @@ public func Decrement(k: String, n: T):Result<Unit>
 
 ### 使用
 
-```
 ```toml
 [dependencies]
 cache = { git = "https://github.com/ystyle/cj-cache", branch = "master"}
-```
 ```
 
 ### 示例
