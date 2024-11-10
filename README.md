@@ -111,28 +111,10 @@ public func Loadfile(filename: String)
 > 自增成功时返回结果值, 不成功则返回None
 
 ```
-Int8 自增
-public func IncrementInt8(k: String, n: T):Option<T>
+自增
+public func Increment(k: String, n: T):Option<T>
 
-Int16 自增
-public func IncrementInt16(k: String, n: T): Result<Unit>
-
-Int32 自增
-public func IncrementInt32(k:String, n:T):Result<Unit>
-
-Int64 自增
-public func Increment(k: String, n: T):Result<Unit>
-
-Int8 自减
-public func DecrementInt8(k: String, n: T):Result<Unit>
-
-Int16 自减
-public func DecrementInt16(k: String, n: T):Result<Unit>
-
-Int32 自减
-public func DecrementInt32(k: String, n: T):Result<Unit>
-
-Int64 自减
+自减
 public func Decrement(k: String, n: T):Result<Unit>
 ```
 
@@ -140,22 +122,18 @@ public func Decrement(k: String, n: T):Result<Unit>
 
 ### 使用
 
-引入 testJekins 包,保持原目录结构
-
-地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 cj-cache 根目录下
-
 ```
-git clone https://gitee.com/HW-PLLab/testJekins
-apt-get install python3
-python3 ci_test/main.py build
-python3 ci_test/main.py test
+```toml
+[dependencies]
+cache = { git = "https://github.com/ystyle/cj-cache", branch = "master"}
+```
 ```
 
 ### 示例
 
 ```
-from cj_cache import cache.*
-from std import time.*
+import cache.*
+import std.time.*
 
 main() {
     let c = Cache<Int64>(Duration.minute*5 , Duration.minute*10)
@@ -169,5 +147,5 @@ main() {
 
 主要写参与贡献的人以及个人主页链接
 
-[@ystyle](https://gitee.com/ystyle)
+[@ystyle](https://github.com/ystyle)
 

@@ -8,12 +8,14 @@
  * Create cache instance and operation
  */
 package cache
-from std import time.*
-from std import collection.HashMap, collection.ArrayList
-from std import sync.*
-from std import io.OutputStream, fs.File, io.InputStream, fs.OpenOption
-from serialization import serialization.*
-from encoding import json.*
+
+import std.time.*
+import std.collection.{HashMap,ArrayList}
+import std.sync.*
+import std.io.{OutputStream, InputStream}
+import std.fs.{File, OpenOption}
+import serialization.serialization.*
+import encoding.json.*
 
 let NoExpiration = Duration.nanosecond * -1
 let DefaultExpiration = Duration.nanosecond * 0
@@ -418,7 +420,7 @@ public class Cache<T> where T <: Serializable<T> {
     public func Save (w:OutputStream) {
         synchronized(this.mu) {
             let m: DataModel = this.items.serialize()
-            w. write(m.toJson().toString().toUtf8Array())
+            w.write(m.toJson().toJsonString().toArray())
             w.flush()
         }
     }
@@ -502,7 +504,7 @@ class Janitor<T> where T <: Serializable<T> {
         this.Interval = interval
     }
     func run(c:Cache<T>) {
-        Timer(start: this.Interval, task: { =>
+        Timer.repeat(Duration.Zero, this.Interval, { =>
             let count = c.ItemCount()
             c.DeleteExpired()
             let currCount = c.ItemCount()

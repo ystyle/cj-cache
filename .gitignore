@@ -14,3 +14,7 @@ lib.o
 module-resolve.json
 module-lock.json
 .cjpm-history
+.cache
+target
+release
+*.cj.macrocall

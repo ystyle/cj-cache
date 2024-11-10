@@ -1,9 +1,9 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from cj_cache import cache.*
-from std import time.*
-from std import collection.HashMap
+import cache.*
+import std.time.*
+import std.collection.HashMap
 
 
 main():Int64 {

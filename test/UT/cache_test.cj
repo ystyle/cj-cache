@@ -1,9 +1,9 @@
 package cache
 
-from std import unittest.*
-from std import unittest.testmacro.*
+import std.unittest.*
+import std.unittest.testmacro.*
 
-from std import time.*
+import std.time.*
 
 @Test
 func testCache():Unit {

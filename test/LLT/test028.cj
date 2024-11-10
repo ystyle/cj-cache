@@ -1,12 +1,12 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from cj_cache import cache.*
-from std import time.*
-from std import collection.HashMap
+import cache.*
+import std.time.*
+import std.collection.HashMap
 from encoding import json.*
 
-main() { 
+main():Int64 { 
     var item1 = Item<Int64>(11)
     var item2 = Item<Int64>(22)
     var item3 = Item<Int64>(33)

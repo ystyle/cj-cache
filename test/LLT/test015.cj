@@ -1,14 +1,14 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from cj_cache import cache.*
-from std import time.*
-from std import collection.HashMap
+import cache.*
+import std.time.*
+import std.collection.HashMap
 
 public func test(a: String, b: Int64): Unit {
     println("error")
 }
-main() {
+main():Int64 {
     var item1 = Item<Int64>(11, 1)
     var item2 = Item<Int64>(22, 3)
     var item3 = Item<Int64>(33, 5)

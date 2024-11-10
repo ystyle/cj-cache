@@ -1,8 +1,8 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from cj_cache import cache.*
-from std import time.*
+import cache.*
+import std.time.*
 
 main() {
     let c = Cache<Int64>(Duration.minute*5 , Duration.minute*10)

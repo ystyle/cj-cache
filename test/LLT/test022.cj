@@ -1,12 +1,12 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from cj_cache import cache.*
-from std import time.*
-from std import collection.HashMap
+import cache.*
+import std.time.*
+import std.collection.HashMap
 
 
-main() {
+main():Int64 {
     let c = Cache<Int32>(Duration.minute*5 , Duration.minute*10)
     c.Set("1", 1)
     c.IncrementInt32("1", 5)

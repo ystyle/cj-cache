@@ -1,11 +1,11 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from cj_cache import cache.*
-from std import time.*
-from std import collection.HashMap
+import cache.*
+import std.time.*
+import std.collection.HashMap
 
-main() {
+main():Int64 {
     var time = (DateTime.now() + Duration.second*50).toUnixTimeStamp().toNanoseconds()
     var item1 = Item<Int64>(11, time)
     var item2 = Item<Int64>(22, time)
